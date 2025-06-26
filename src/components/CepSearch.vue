@@ -86,6 +86,12 @@
         </button>
       </div>
 
+      <!-- Componente de Histórico -->
+      <HistoricoBuscas 
+        @selecionar-cep="buscarCepDoHistorico"
+        class="historico-section"
+      />
+
       <!-- Informações sobre a API -->
       <div class="api-info">
         <h3>ℹ️ Sobre a API ViaCEP</h3>
@@ -105,6 +111,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useCepApi } from '@/composables/useCepApi'
+import HistoricoBuscas from './HistoricoBuscas.vue'
 
 // Composable para gerenciar a API
 const { apiState, cepData, fetchCep, clearData, formatCep } = useCepApi()
@@ -135,6 +142,12 @@ const handleSubmit = async () => {
   if (!cepInput.value.trim()) return
   
   await fetchCep(cepInput.value)
+}
+
+// Função para buscar CEP do histórico
+const buscarCepDoHistorico = async (cep: string) => {
+  cepInput.value = formatCep(cep)
+  await fetchCep(cep)
 }
 </script>
 
@@ -321,6 +334,10 @@ const handleSubmit = async () => {
 
 .api-info a:hover {
   text-decoration: underline;
+}
+
+.historico-section {
+  margin-top: 3rem;
 }
 
 /* Responsividade */

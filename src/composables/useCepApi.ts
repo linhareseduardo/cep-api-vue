@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import type { CepData, ApiState } from '@/types/cep'
+import { useHistorico } from '@/composables/useHistorico'
 
 export function useCepApi() {
   const apiState = ref<ApiState>({
@@ -8,6 +9,9 @@ export function useCepApi() {
   })
   
   const cepData = ref<CepData | null>(null)
+  
+  // Integração com histórico
+  const { salvarHistorico } = useHistorico()
 
   // Função para validar o formato do CEP
   const isValidCep = (cep: string): boolean => {
@@ -52,6 +56,13 @@ export function useCepApi() {
       }
 
       cepData.value = data
+      
+      // Salvar no histórico (não bloqueia se falhar)
+      try {
+        await salvarHistorico(data)
+      } catch (error) {
+        console.warn('Aviso: Não foi possível salvar no histórico:', error)
+      }
     } catch (error) {
       apiState.value.error = error instanceof Error 
         ? error.message 
